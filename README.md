@@ -11,3 +11,4 @@
   - z
   - feh
   - dunst
+  - powerline
