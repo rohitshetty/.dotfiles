@@ -8,16 +8,16 @@
 # i3 config file (v4)
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
-
+#exec_always --no-startup-id picom -c 
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font pango:monospace 15
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-#font pango:DejaVu Sans Mono 8
+#font pango:DejaVu Sans Mono 15
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -167,6 +167,7 @@ bar {
 		urgent_workspace   #2f343a #900000 #ffffff
 		binding_mode       #2f343a #900000 #ffffff
 	}
+font pango:DejaVu Sans Mono 15
 
 }
 # class                 border  backgr. text    indicator child_border
@@ -179,11 +180,11 @@ client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 client.background       #ffffff
 
 
-bindsym ctrl+$mod+l exec /home/rohit/apps/blurlock/lock.sh
+#bindsym ctrl+$mod+l exec /home/rohit/apps/blurlock/lock.sh
 bindsym $mod+q exec "rofi -show window ~/.config/rofi/config.rasi"
-bindsym $mod+shift+f exec /usr/bin/firefox
+bindsym $mod+shift+f exec /usr/bin/librewolf
 
-exec_always --no-startup-id feh --bg-fill $(ls -d /home/rohit/screensavers/* | shuf -n 1)
+exec_always --no-startup-id feh --bg-fill $(ls -d /usr/share/backgrounds/archlinux/* | shuf -n 1)
 
 exec_always xinput set-prop "MSFT0001:01 04F3:309E Touchpad" "libinput Tapping Enabled" 1
 exec_always --no-startup-id xset s off -dpms

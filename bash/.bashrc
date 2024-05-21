@@ -121,36 +121,36 @@ export TERM="screen-256color"
 powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
-. /home/rohit/.local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
+. /usr/share/powerline/bindings/bash/powerline.sh
 
 LANG="en_IN.utf8"
 export LANG
 #neowofetch --jp2a ~/.config/neofetch/ezgif.com-gif-maker.jpg --size 400 
 #neowofetch
-hyfetch --ascii-file ~/.config/neofetch/b.txt -m 8bit
+hyfetch  --config-file ~/.config/hyfetch/hyfetch.json
 
 
 eval "$(lua ~/apps/z.lua/z.lua --init bash enhanced once fzf)"
-alias nosqlbooster="nosqlbooster4mongo-6.0.0.AppImage"
+#alias nosqlbooster="nosqlbooster4mongo-6.0.0.AppImage"
 
 
 #alias nnote="touch $(date -I'minutes').txt && cd ."
 #alias olnote="echo $(ls $PWD -1 | sort -r | head -1)"
 #alias onnote="nano $(date -I'minutes').txt && cd ."
 
-alias postman="~/apps/Postman/./Postman&"
+#alias postman="~/apps/Postman/./Postman&"
 
-export PATH=$PATH:/home/rohit/apps/scripts
-export PATH=$PATH:/home/rohit/apps/bin
-source "$HOME/.cargo/env"
-export PATH=$PATH:/home/rohit/apps/adr-tools-3.0.0/src/
+#export PATH=$PATH:/home/rohit/apps/scripts
+#export PATH=$PATH:/home/rohit/apps/bin
+#source "$HOME/.cargo/env"
+#export PATH=$PATH:/home/rohit/apps/adr-tools-3.0.0/src/
 export PATH=$PATH:/home/rohit/apps
-source "$HOME/apps/bash-wakatime/bash-wakatime.sh"
+#source "$HOME/apps/bash-wakatime/bash-wakatime.sh"
 export N_PREFIX=$HOME/.local
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:/$HOME/apps/foto
+#export PATH=$PATH:/usr/local/go/bin
+#export PATH=$PATH:/$HOME/apps/foto
 #export around=/home/rohit/apps/Around.AppImage
 
 # Install Ruby Gems to ~/gems
-export GEM_HOME="$HOME/gems"
-export PATH="$HOME/gems/bin:$PATH"
+#export GEM_HOME="$HOME/gems"
+#export PATH="$HOME/gems/bin:$PATH"

@@ -1,0 +1,7 @@
+font_size 21.0
+
+
+# BEGIN_KITTY_THEME
+# Nord
+include current-theme.conf
+# END_KITTY_THEME
