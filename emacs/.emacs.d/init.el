@@ -15,9 +15,13 @@
   kept-old-versions 2
   version-control t)
 
+;;Fira Code
+(set-face-attribute 'default nil :font "Fira Code iScript" :height 100)
+
 ;; first, declare repositories
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("org"  . "https://orgmode.org/elpa/")
         ("melpa" . "http://melpa.org/packages/")))
 
 ;; Init the package facility
@@ -236,3 +240,14 @@
    '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
    '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
    '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+
+
+
+
+;; Show the number line in prog mode
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(show-paren-mode 1)
+
+
+(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+(projectile-mode +1))
