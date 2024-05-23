@@ -154,3 +154,6 @@ export N_PREFIX=$HOME/.local
 # Install Ruby Gems to ~/gems
 #export GEM_HOME="$HOME/gems"
 #export PATH="$HOME/gems/bin:$PATH"
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
