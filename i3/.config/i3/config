@@ -184,7 +184,7 @@ client.background       #ffffff
 bindsym $mod+q exec "rofi -show window ~/.config/rofi/config.rasi"
 bindsym $mod+shift+f exec /usr/bin/librewolf
 
-exec_always --no-startup-id feh --bg-fill $(ls -d /usr/share/backgrounds/archlinux/* | shuf -n 1)
+exec_always --no-startup-id feh --bg-fill $(ls -d $HOME/wallpaper/* | shuf -n 1)
 
 exec_always xinput set-prop "MSFT0001:01 04F3:309E Touchpad" "libinput Tapping Enabled" 1
 exec_always --no-startup-id xset s off -dpms

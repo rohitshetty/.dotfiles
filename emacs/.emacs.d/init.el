@@ -1,6 +1,5 @@
+;;; -*- mode: elisp -*-
 
-
-;; -*- mode: elisp -*-
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -15,8 +14,7 @@
   kept-old-versions 2
   version-control t)
 
-;;Fira Code
-(set-face-attribute 'default nil :font "Fira Code iScript" :height 100)
+
 
 ;; first, declare repositories
 (setq package-archives
@@ -46,6 +44,12 @@
 	doom-themes
 	org-superstar
 	spacemacs-theme
+	lsp-mode
+	rustic
+	company
+	yasnippet
+	use-package
+	ivy
 	))
 
 ;; Iterate on packages and install missing ones
@@ -140,13 +144,18 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-agenda-files nil)
- '(package-selected-packages '(org-super-agenda)))
+ '(package-selected-packages '(lsp-ui org-super-agenda)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
  '(org-document-title ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif" :height 1.6 :underline nil))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
  '(org-level-1 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif" :height 1.5))))
  '(org-level-2 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif" :height 1.3))))
  '(org-level-3 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif" :height 1.2))))
@@ -154,7 +163,14 @@
  '(org-level-5 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif"))))
  '(org-level-6 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif"))))
  '(org-level-7 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif"))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif")))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "black" :family "Sans Serif"))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))))
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 
 
 
@@ -164,6 +180,7 @@
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 ;; Set the banner
 (setq dashboard-startup-banner 'official)
+(setq dashboard-projects-backend 'projectile)
 ;; Value can be:
 ;;  - 'official which displays the official emacs logo.
 ;;  - 'logo which displays an alternative emacs logo.
@@ -248,6 +265,99 @@
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (show-paren-mode 1)
 
+(projectile-mode +1)
+(with-eval-after-load 'projectile (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
 
-(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
-(projectile-mode +1))
+;;Fira Code
+(set-face-attribute 'default nil :font "Fira Code" :height 180)
+
+
+
+;; rust mode setup
+;; source: https://robert.kra.hn/posts/rust-emacs-setup/
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. Once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
+  (when buffer-file-name
+    (setq-local buffer-save-without-query t))
+  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
+
+(use-package lsp-mode
+  :ensure
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-eldoc-hook nil)  
+  (lsp-idle-delay 0.6)
+  ;; enable / disable the hints as you prefer:
+  (lsp-inlay-hint-enable nil)
+  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints nil)
+  (lsp-rust-analyzer-display-reborrow-hints nil)
+ ;;config
+ ;;add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  )
+
+
+(use-package lsp-ui
+  :ensure
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover nil)
+  (lsp-ui-doc-enable nil)
+  )
+
+(use-package company
+  :ensure
+  :custom
+  (company-idle-delay 0.5) ;; how long to wait until popup
+  ;; (company-begin-commands nil) ;; uncomment to disable popup
+  :bind
+  (:map company-active-map
+	      ("C-n". company-select-next)
+	      ("C-p". company-select-previous)
+	      ("M-<". company-select-first)
+	      ("M->". company-select-last)))
+
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
+(use-package flycheck :ensure)
+(setq projectile-completion-system 'ivy)
+
+
+(setq projectile-project-search-path '("~/projects/"))

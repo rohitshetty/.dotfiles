@@ -147,6 +147,7 @@ eval "$(lua ~/apps/z.lua/z.lua --init bash enhanced once fzf)"
 export PATH=$PATH:/home/rohit/apps
 #source "$HOME/apps/bash-wakatime/bash-wakatime.sh"
 export N_PREFIX=$HOME/.local
+export PATH=$PATH:/$HOME/.cargo/bin
 #export PATH=$PATH:/usr/local/go/bin
 #export PATH=$PATH:/$HOME/apps/foto
 #export around=/home/rohit/apps/Around.AppImage
