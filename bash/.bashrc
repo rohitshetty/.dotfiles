@@ -117,43 +117,77 @@ if ! shopt -oq posix; then
 fi
 export TERM="screen-256color"
 
-
+# Powerline
 powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
-. /usr/share/powerline/bindings/bash/powerline.sh
+if [ -f /usr/share/powerline/bindings/bash/powerline.sh ]; then
+    . /usr/share/powerline/bindings/bash/powerline.sh
+elif [ -f "$HOME/.local/lib/python3.*/site-packages/powerline/bindings/bash/powerline.sh" ]; then
+    . "$HOME"/.local/lib/python3.*/site-packages/powerline/bindings/bash/powerline.sh
+fi
 
+# Locale
 LANG="en_IN.utf8"
 export LANG
-#neowofetch --jp2a ~/.config/neofetch/ezgif.com-gif-maker.jpg --size 400 
-#neowofetch
-hyfetch  --config-file ~/.config/hyfetch/hyfetch.json
-
-
-eval "$(lua ~/apps/z.lua/z.lua --init bash enhanced once fzf)"
-#alias nosqlbooster="nosqlbooster4mongo-6.0.0.AppImage"
-
-
-#alias nnote="touch $(date -I'minutes').txt && cd ."
-#alias olnote="echo $(ls $PWD -1 | sort -r | head -1)"
-#alias onnote="nano $(date -I'minutes').txt && cd ."
-
-#alias postman="~/apps/Postman/./Postman&"
-
-#export PATH=$PATH:/home/rohit/apps/scripts
-#export PATH=$PATH:/home/rohit/apps/bin
-#source "$HOME/.cargo/env"
-#export PATH=$PATH:/home/rohit/apps/adr-tools-3.0.0/src/
-export PATH=$PATH:/home/rohit/apps
-#source "$HOME/apps/bash-wakatime/bash-wakatime.sh"
-export N_PREFIX=$HOME/.local
-#export PATH=$PATH:/usr/local/go/bin
-#export PATH=$PATH:/$HOME/apps/foto
-#export around=/home/rohit/apps/Around.AppImage
-
-# Install Ruby Gems to ~/gems
-#export GEM_HOME="$HOME/gems"
-#export PATH="$HOME/gems/bin:$PATH"
-
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
+# hyfetch on shell start
+hyfetch --ascii-file ~/.config/neofetch/b.txt -m 8bit
+
+# z.lua - directory jumper
+eval "$(lua ~/apps/z.lua/z.lua --init bash enhanced once fzf)"
+
+# Aliases
+alias tm='task-master'
+alias taskmaster='task-master'
+alias mpdstart='mpd ~/.config/mpd/mpd.conf'
+
+# PATH
+export N_PREFIX=$HOME/.local
+export PATH=$PATH:/home/rohit/apps
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+[ -d "/usr/local/go/bin" ] && export PATH=$PATH:/usr/local/go/bin
+
+# pnpm
+export PNPM_HOME="/home/rohit/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+[ -d "$BUN_INSTALL/bin" ] && export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Pomodoro timer
+function pomo() {
+    arg1=$1
+    shift
+    args="$*"
+
+    min=${arg1:?Example: pomo 15 Take a break}
+    sec=$((min * 60))
+    msg="${args:?Example: pomo 15 Take a break}"
+
+    while true; do
+        date '+%H:%M' && sleep "${sec:?}" && notify-send -u critical -t 2500 -a pomo "${msg:?}"
+    done
+}
+
+# Quick reminder using at
+remind() {
+  local amount="$1"
+  local unit="$2"
+
+  if [[ "$unit" =~ ^(minute|minutes|hour|hours|day|days)$ ]]; then
+    shift 2
+  else
+    unit="minutes"
+    shift 1
+  fi
+
+  echo "notify-send \"Reminder\" \"$*\"" \
+    | at now + "$amount $unit"
+}

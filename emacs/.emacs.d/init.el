@@ -32,7 +32,7 @@
 
 ;; Declare packages
 (setq my-packages
-      '(org-super-agenda
+      '(
 	comment-tags
 	page-break-lines
 	projectile
@@ -249,5 +249,8 @@
 (show-paren-mode 1)
 
 
-(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
-(projectile-mode +1))
+(use-package projectile
+    :ensure t
+    :config
+    (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+    (projectile-mode +1))
