@@ -132,7 +132,22 @@ The i3 config expects:
 - **Rofi** as app launcher (`Mod+d`) and window switcher (`Mod+q`)
 - **Firefox** on `Mod+Shift+f`
 
-## 8. Optional extras
+## 8. Firefox setup
+
+1. Sign into Firefox Sync to get your extensions (Tree Style Tab, etc.) and bookmarks
+2. Enable userChrome.css support — open `about:config` and set:
+   ```
+   toolkit.legacyUserProfileCustomizations.stylesheets = true
+   ```
+3. Find your profile folder — open `about:profiles` and note the root directory path
+4. Copy the chrome folder into your profile:
+   ```bash
+   cp -r ~/.mozilla/firefox/chrome/ ~/.mozilla/firefox/<your-profile-id>.default-release/chrome/
+   ```
+   The `stow firefox` command places the chrome folder at `~/.mozilla/firefox/chrome/`. Since profile IDs differ per install, you need to copy it into the actual profile directory manually.
+5. Restart Firefox — the top tab bar should now be hidden
+
+## 9. Optional extras
 
 | Tool | Install | What for |
 |---|---|---|
