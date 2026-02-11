@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Generate a random Game of Life scene as ASCII art."""
+
+import random
+
+ROWS = 26
+COLS = 30
+ITERATIONS = random.randint(8, 15)
+FILL = 0.35
+ALIVE = "██"
+DEAD = "  "
+
+
+def make_grid():
+    return [
+        [random.random() < FILL for _ in range(COLS)]
+        for _ in range(ROWS)
+    ]
+
+
+def step(grid):
+    new = [[False] * COLS for _ in range(ROWS)]
+    for r in range(ROWS):
+        for c in range(COLS):
+            n = sum(
+                grid[(r + dr) % ROWS][(c + dc) % COLS]
+                for dr in (-1, 0, 1)
+                for dc in (-1, 0, 1)
+                if (dr, dc) != (0, 0)
+            )
+            new[r][c] = n == 3 or (grid[r][c] and n == 2)
+    return new
+
+
+def render(grid):
+    for row in grid:
+        print("".join(ALIVE if cell else DEAD for cell in row))
+
+
+grid = make_grid()
+for _ in range(ITERATIONS):
+    grid = step(grid)
+render(grid)

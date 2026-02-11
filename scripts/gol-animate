@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Animated Langton's Ant in the terminal, then hyfetch."""
+
+import os
+import random
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+
+FRAMES = 20
+DELAY = 0.04
+A = "██"
+D = "  "
+HF_ROWS = 26
+HF_COLS = 30
+HOME = "\033[H"
+HIDE = "\033[?25l"
+SHOW = "\033[?25h"
+CLR = "\033[2J"
+
+
+def term_size():
+    c, r = shutil.get_terminal_size()
+    return r, c // 2
+
+
+def render(grid):
+    return "\n".join("".join(row) for row in grid)
+
+
+def crop(grid, rows, cols):
+    r0 = max(0, (rows - HF_ROWS) // 2)
+    c0 = max(0, (cols - HF_COLS) // 2)
+    return [row[c0:c0 + HF_COLS] for row in grid[r0:r0 + HF_ROWS]]
+
+
+class LangtonsAnt:
+    def __init__(self, R, C):
+        self.R, self.C = R, C
+        self.rule = "".join(random.choice("RL") for _ in range(random.randint(2, 6)))
+        self.states = len(self.rule)
+        self.g = [[0] * C for _ in range(R)]
+        n_ants = random.randint(1, 4)
+        self.ants = [(random.randint(0, R - 1), random.randint(0, C - 1), random.randint(0, 3))
+                     for _ in range(n_ants)]
+        self.spf = max(1, R * C // 2)
+
+    def step(self):
+        DR, DC = [-1, 0, 1, 0], [0, 1, 0, -1]
+        for _ in range(self.spf):
+            new_ants = []
+            for r, c, d in self.ants:
+                s = self.g[r][c]
+                d = (d + (1 if self.rule[s] == "R" else -1)) % 4
+                self.g[r][c] = (s + 1) % self.states
+                new_ants.append(((r + DR[d]) % self.R, (c + DC[d]) % self.C, d))
+            self.ants = new_ants
+
+    def render(self):
+        return [[A if self.g[r][c] > 0 else D for c in range(self.C)] for r in range(self.R)]
+
+
+rows, cols = term_size()
+gen = LangtonsAnt(rows, cols)
+
+try:
+    sys.stdout.write(HIDE + CLR)
+    prev = None
+    for i in range(FRAMES):
+        frame = render(gen.render())
+        sys.stdout.write(HOME + frame)
+        sys.stdout.flush()
+        if frame == prev:
+            break
+        prev = frame
+        time.sleep(DELAY)
+        gen.step()
+except KeyboardInterrupt:
+    pass
+finally:
+    sys.stdout.write(SHOW + CLR + HOME)
+    sys.stdout.flush()
+
+    cropped = render(crop(gen.render(), rows, cols))
+    tmp = os.path.join(tempfile.gettempdir(), "gol-frame.txt")
+    with open(tmp, "w") as f:
+        f.write(cropped + "\n")
+    subprocess.run(["hyfetch", "--ascii-file", tmp, "-m", "8bit"])
